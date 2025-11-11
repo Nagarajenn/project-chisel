@@ -28,12 +28,34 @@ const mockEvidence = [
     type: "Dashboard",
     reason: "Provides visualization patterns for transaction matching and discrepancies",
   },
+  {
+    id: 4,
+    title: "Multi-Format PDF Parser",
+    relevance: 82,
+    type: "Code",
+    reason: "Handles various PDF formats including scanned images and text-based documents",
+  },
+  {
+    id: 5,
+    title: "Accounting System Integration",
+    relevance: 78,
+    type: "Code",
+    reason: "REST API connectors for QuickBooks and Xero with batch sync capabilities",
+  },
+  {
+    id: 6,
+    title: "Discrepancy Tracking System",
+    relevance: 75,
+    type: "Dashboard",
+    reason: "Real-time alerts and reporting for financial mismatches",
+  },
 ];
 
 export default function BlueprintGenerator() {
   const [intent, setIntent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showEvidence, setShowEvidence] = useState(false);
+  const [selectedEvidence, setSelectedEvidence] = useState<number[]>([]);
 
   const handleGenerate = async () => {
     if (!intent.trim()) {
@@ -42,12 +64,28 @@ export default function BlueprintGenerator() {
     }
 
     setIsGenerating(true);
+    setSelectedEvidence([]);
     // Simulate RAG retrieval
     setTimeout(() => {
       setShowEvidence(true);
       setIsGenerating(false);
       toast.success("Found relevant artifacts from project history");
     }, 2000);
+  };
+
+  const toggleEvidence = (id: number) => {
+    setSelectedEvidence(prev => 
+      prev.includes(id) ? prev.filter(eid => eid !== id) : [...prev, id]
+    );
+  };
+
+  const handleContinue = () => {
+    if (selectedEvidence.length === 0) {
+      toast.error("Please select at least one artifact");
+      return;
+    }
+    toast.success(`Creating blueprint with ${selectedEvidence.length} artifacts`);
+    // Navigate to editor or next step
   };
 
   return (
@@ -109,30 +147,48 @@ export default function BlueprintGenerator() {
               These proven solutions match your requirements. Click to include in blueprint.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {mockEvidence.map((evidence) => (
-              <div
-                key={evidence.id}
-                className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-accent/5 cursor-pointer transition-colors group"
-              >
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
-                  {evidence.type === "Code" ? (
-                    <Code2 className="h-5 w-5 text-primary" />
-                  ) : (
-                    <FileText className="h-5 w-5 text-primary" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm">{evidence.title}</h4>
-                    <Badge variant="outline" className="text-success border-success/30 bg-success/5">
-                      {evidence.relevance}% match
-                    </Badge>
+          <CardContent className="space-y-4">
+            {mockEvidence.map((evidence) => {
+              const isSelected = selectedEvidence.includes(evidence.id);
+              return (
+                <div
+                  key={evidence.id}
+                  onClick={() => toggleEvidence(evidence.id)}
+                  className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-all group ${
+                    isSelected 
+                      ? 'border-primary bg-primary/10 shadow-sm' 
+                      : 'bg-card hover:bg-accent/5 hover:border-primary/30'
+                  }`}
+                >
+                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
+                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-primary/10 group-hover:bg-primary/20'
+                  }`}>
+                    {evidence.type === "Code" ? (
+                      <Code2 className="h-5 w-5" />
+                    ) : (
+                      <FileText className="h-5 w-5" />
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground">{evidence.reason}</p>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-sm">{evidence.title}</h4>
+                      <Badge variant="outline" className="text-success border-success/30 bg-success/5">
+                        {evidence.relevance}% match
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{evidence.reason}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-sm text-muted-foreground">
+                {selectedEvidence.length} artifact{selectedEvidence.length !== 1 ? 's' : ''} selected
+              </p>
+              <Button onClick={handleContinue} disabled={selectedEvidence.length === 0}>
+                Continue with Selected
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
