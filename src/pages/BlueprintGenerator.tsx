@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Sparkles, Loader2, TrendingUp, FileText, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,6 +53,7 @@ const mockEvidence = [
 ];
 
 export default function BlueprintGenerator() {
+  const navigate = useNavigate();
   const [intent, setIntent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showEvidence, setShowEvidence] = useState(false);
@@ -84,8 +86,9 @@ export default function BlueprintGenerator() {
       toast.error("Please select at least one artifact");
       return;
     }
+    const selected = mockEvidence.filter(e => selectedEvidence.includes(e.id));
+    navigate("/editor", { state: { artifacts: selected, intent } });
     toast.success(`Creating blueprint with ${selectedEvidence.length} artifacts`);
-    // Navigate to editor or next step
   };
 
   return (
