@@ -341,12 +341,12 @@ export default function BlueprintEditor() {
       <div className="flex gap-4">
         <div className="w-64">
           <Label htmlFor="project">Project (optional)</Label>
-          <Select value={selectedProjectId || ""} onValueChange={(v) => setSelectedProjectId(v || null)}>
+          <Select value={selectedProjectId || "none"} onValueChange={(v) => setSelectedProjectId(v === "none" ? null : v)}>
             <SelectTrigger id="project">
               <SelectValue placeholder="Select project" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No project</SelectItem>
+              <SelectItem value="none">No project</SelectItem>
               {projects.map((project) => (
                 <SelectItem key={project.id} value={project.id}>
                   {project.name}
