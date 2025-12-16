@@ -94,6 +94,44 @@ export type Database = {
         }
         Relationships: []
       }
+      blueprint_versions: {
+        Row: {
+          blueprint_id: string
+          change_summary: string | null
+          content_json: Json
+          created_at: string
+          created_by: string
+          id: string
+          version_number: number
+        }
+        Insert: {
+          blueprint_id: string
+          change_summary?: string | null
+          content_json?: Json
+          created_at?: string
+          created_by: string
+          id?: string
+          version_number: number
+        }
+        Update: {
+          blueprint_id?: string
+          change_summary?: string | null
+          content_json?: Json
+          created_at?: string
+          created_by?: string
+          id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blueprint_versions_blueprint_id_fkey"
+            columns: ["blueprint_id"]
+            isOneToOne: false
+            referencedRelation: "blueprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blueprints: {
         Row: {
           artifact_ids: string[] | null
